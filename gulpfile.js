@@ -14,6 +14,7 @@ const babel = require('gulp-babel');
 const gulpSrcPath = 'src/';
 const libsPath = 'libs/';
 const distPath = 'dist/';
+const nodeModules = 'node_modules/';
 
 // BrowserSync proxy config
 function browserSyncProxy() {
@@ -40,7 +41,8 @@ function browserSyncReload(done) {
 function jsLibs() {
   return gulp
     .src([
-      libsPath + 'jquery/dist/jquery.min.js' // jQuery
+      nodeModules + 'jquery/dist/jquery.min.js', // jQuery
+      nodeModules + 'magnific-popup/dist/jquery.magnific-popup.min.js' // magnific-popup
     ])
     .pipe(concat('libs.min.js'))
     .pipe(uglify())
@@ -51,19 +53,20 @@ function jsLibs() {
 function cssLibs() {
   return gulp
     .src([
-      libsPath + 'normalize-css/normalize.css' // Normalize
+      nodeModules + 'magnific-popup/dist/magnific-popup.css' // magnific-popup
     ])
     .pipe(concat('libs.min.css'))
     .pipe(cssnano())
-    .pipe(gulp.dest(distPath + 'css'))
-    .pipe(browserSync.stream());
+    .pipe(gulp.dest(distPath + 'css'));
 }
 
 // Compiling main.sass files
-function mainSass() {
+function mainScss() {
   return gulp
     .src([gulpSrcPath + 'scss/main.scss'])
-    .pipe(sass({ outputStyle: 'expanded' }).on('error', sass.logError))
+    .pipe(sass({
+      outputStyle: 'expanded'
+    }).on('error', sass.logError))
     .pipe(concat('common.css'))
     .pipe(
       autoprefixer(['last 15 versions', '> 1%', 'ie 8', 'ie 7'], {
@@ -78,7 +81,9 @@ function commonJs() {
   return gulp
     .src([gulpSrcPath + 'js/main/main.js'])
     .pipe(concat('common.js'))
-    .pipe(babel({ presets: ['@babel/env'] }))
+    .pipe(babel({
+      presets: ['@babel/env']
+    }))
     .pipe(gulp.dest(gulpSrcPath + 'js'));
 }
 
@@ -100,7 +105,9 @@ function clearDist() {
 function commonCssDist() {
   return gulp
     .src([gulpSrcPath + 'css/common.css'])
-    .pipe(cssnano({ zindex: false }))
+    .pipe(cssnano({
+      zindex: false
+    }))
     .pipe(rename('common.min.css'))
     .pipe(gulp.dest(distPath + 'css'))
     .pipe(browserSync.stream());
@@ -122,7 +129,7 @@ function commonJsDist() {
 function watchFiles() {
   gulp.watch(
     `${gulpSrcPath}scss/**/*.scss`,
-    gulp.series(mainSass, commonCssDist)
+    gulp.series(mainScss, commonCssDist)
   );
   gulp.watch(
     `${gulpSrcPath}js/main/**/*.js`,
@@ -132,8 +139,11 @@ function watchFiles() {
   gulp.watch('*.php', browserSyncReload);
 }
 
-const watch = gulp.parallel(watchFiles, browserSyncSelf);
+const watch = gulp.parallel(jsLibs, cssLibs, watchFiles, browserSyncSelf);
 
 exports.default = watch;
+
 exports.commonJsDist = commonJsDist;
 exports.commonCssDist = commonCssDist;
+exports.jslibs = jsLibs;
+exports.csslibs = cssLibs;

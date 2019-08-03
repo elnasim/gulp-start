@@ -1,3 +1,5 @@
 "use strict";
 
-console.log("it's work!!!");
+jQuery(document).ready(function () {
+  console.log("it's work!!!");
+});
