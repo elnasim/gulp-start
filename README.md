@@ -1,1 +1,3 @@
-gulpSetup
+### npm i
+
+### gulp
