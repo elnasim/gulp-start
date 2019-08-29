@@ -42,7 +42,9 @@ function jsLibs() {
   return gulp
     .src([
       nodeModules + 'jquery/dist/jquery.min.js', // jQuery
-      nodeModules + 'magnific-popup/dist/jquery.magnific-popup.min.js' // magnific-popup
+      nodeModules + 'magnific-popup/dist/jquery.magnific-popup.min.js', // magnific-popup
+      nodeModules + 'slick-carousel/slick/slick.min.js', // slick
+      nodeModules + 'jquery-validation/dist/jquery.validate.min.js', // jquery-validate
     ])
     .pipe(concat('libs.min.js'))
     .pipe(uglify())
@@ -53,7 +55,9 @@ function jsLibs() {
 function cssLibs() {
   return gulp
     .src([
-      nodeModules + 'magnific-popup/dist/magnific-popup.css' // magnific-popup
+      nodeModules + 'magnific-popup/dist/magnific-popup.css', // magnific-popup
+      nodeModules + 'slick-carousel/slick/slick.css', // slick
+      nodeModules + 'slick-carousel/slick/slick-theme.css', // slick
     ])
     .pipe(concat('libs.min.css'))
     .pipe(cssnano())
@@ -81,9 +85,9 @@ function commonJs() {
   return gulp
     .src([gulpSrcPath + 'js/main/main.js'])
     .pipe(concat('common.js'))
-    .pipe(babel({
-      presets: ['@babel/env']
-    }))
+    // .pipe(babel({
+    //   presets: ['@babel/env']
+    // }))
     .pipe(gulp.dest(gulpSrcPath + 'js'));
 }
 
@@ -97,17 +101,17 @@ function clear(done) {
 // // ======================================================
 
 // Clear distribution dir
-function clearDist() {
-  return del(distPath + '**');
-}
+// function clearDist() {
+//   return del(distPath + '**');
+// }
 
 // Common css
 function commonCssDist() {
   return gulp
     .src([gulpSrcPath + 'css/common.css'])
-    .pipe(cssnano({
-      zindex: false
-    }))
+    // .pipe(cssnano({
+    //   zindex: false
+    // }))
     .pipe(rename('common.min.css'))
     .pipe(gulp.dest(distPath + 'css'))
     .pipe(browserSync.stream());
@@ -117,7 +121,7 @@ function commonCssDist() {
 function commonJsDist() {
   return gulp
     .src([gulpSrcPath + 'js/common.js'])
-    .pipe(uglify())
+    //.pipe(uglify())
     .pipe(rename('common.min.js'))
     .pipe(gulp.dest(distPath + 'js'))
     .pipe(browserSync.stream());
@@ -147,3 +151,4 @@ exports.commonJsDist = commonJsDist;
 exports.commonCssDist = commonCssDist;
 exports.jslibs = jsLibs;
 exports.csslibs = cssLibs;
+exports.cache = clear;
